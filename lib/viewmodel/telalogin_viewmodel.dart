@@ -1,5 +1,7 @@
-class TelaloginViewModel {
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
+class TelaloginViewModel {
   String? validarEmail(String? value) {
     if (value == null || value.isEmpty) {
       return "Informe o email";
@@ -15,9 +17,25 @@ class TelaloginViewModel {
       return "Informe a senha";
     }
     if (value.length < 4) {
-      return "Mínimo 4 caracteres";
+      return "Deve ter no mínimo 4 caracteres";
     }
     return null;
   }
 
+  Future<bool> loginAPI(String email, String senha) async {
+    final url = Uri.parse("http://localhost/efesta/login.php");
+
+    final response = await http.post(
+      url,
+      body: {"email": email, "senha": senha},
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (data["status"] == "sucesso") {
+      return true;
+    } else {
+      return false;
+    }
+  }
 }
