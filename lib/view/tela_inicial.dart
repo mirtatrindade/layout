@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'mapa_geolocalizacao_page.dart';
 
 class TelaInicial extends StatelessWidget {
   const TelaInicial({super.key});
@@ -44,14 +45,38 @@ class TelaInicial extends StatelessWidget {
               ],
             ),
 
-            child: const Text(
-              "Vamos armar a sua festa!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 242, 164, 164),
-              ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Vamos armar a sua festa!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 242, 164, 164),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const MapaGeolocalizacaoPage(),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.map),
+                  label: const Text("Ver mapa do salão"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color.fromARGB(255, 242, 164, 164),
+                    foregroundColor: Colors.white,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
