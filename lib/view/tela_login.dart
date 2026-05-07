@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../viewmodel/telalogin_viewmodel.dart';
-import 'tela_inicial.dart';
+import 'admin_page.dart';
+import 'cliente_page.dart';
 
 class Telalogin extends StatefulWidget {
   const Telalogin({super.key});
@@ -11,8 +13,10 @@ class Telalogin extends StatefulWidget {
 
 class _TelaloginState extends State<Telalogin> {
   final _formKey = GlobalKey<FormState>();
+
   final _controllerEmail = TextEditingController();
   final _controllerSenha = TextEditingController();
+
   bool _hideText = true;
 
   final viewModel = TelaloginViewModel();
@@ -24,28 +28,20 @@ class _TelaloginState extends State<Telalogin> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        title: Semantics(
-          header: true,
-          child: Text(
-            "BEM-VINDO!",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 30,
-              fontWeight: FontWeight.w600,
-              color: Color.fromARGB(255, 242, 164, 164),
-              shadows: [
-                Shadow(
-                  blurRadius: 6,
-                  color: Colors.black26,
-                  offset: Offset(2, 3),
-                ),
-              ],
-            ),
+        title: const Text(
+          "BEM-VINDO!",
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w600,
+            color: Color.fromARGB(255, 214, 106, 106),
           ),
         ),
       ),
+
       body: Container(
         width: double.infinity,
+
         decoration: const BoxDecoration(
           gradient: LinearGradient(
             colors: [
@@ -57,168 +53,188 @@ class _TelaloginState extends State<Telalogin> {
             end: Alignment.bottomRight,
           ),
         ),
+
         child: Padding(
           padding: const EdgeInsets.all(30),
+
           child: Form(
             key: _formKey,
-            child: Semantics(
-              container: true,
-              label: "Formulário de login",
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Semantics(
-                    label: "Logo do aplicativo e-Festa",
-                    image: true,
-                    child: ClipOval(
-                      child: Container(
-                        width: 200,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(color: Colors.white, width: 3),
-                        ),
-                        child: Image.asset(
-                          "assets/logo_e-festa.png",
-                          fit: BoxFit.contain,
-                          alignment: Alignment(0, -2),
-                        ),
-                      ),
-                    ),
-                  ),
 
-                  const SizedBox(height: 10),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
 
-                  Container(
-                    padding: const EdgeInsets.all(15),
+              children: [
+
+                ClipOval(
+                  child: Container(
+                    width: 200,
+                    height: 140,
+
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
+                      border: Border.all(
+                        color: Colors.white,
+                        width: 3,
+                      ),
                     ),
-                    child: Column(
-                      children: [
-                        Semantics(
-                          label: "Campo de email",
-                          hint: "Digite seu email",
-                          textField: true,
-                          child: TextFormField(
-                            controller: _controllerEmail,
-                            keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              labelText: "Email",
-                              hintText: "Digite seu email",
-                              prefixIcon: ExcludeSemantics(
-                                child: Icon(Icons.email),
-                              ),
-                            ),
-                            validator: viewModel.validarEmail,
-                          ),
-                        ),
 
-                        const SizedBox(height: 10),
-
-                        Semantics(
-                          label: "Campo de senha",
-                          hint: "Digite sua senha",
-                          textField: true,
-                          child: TextFormField(
-                            controller: _controllerSenha,
-                            obscureText: _hideText,
-                            decoration: InputDecoration(
-                              filled: true,
-                              fillColor: Colors.white,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              labelText: "Senha",
-                              hintText: "Digite sua senha",
-                              prefixIcon: ExcludeSemantics(
-                                child: Icon(Icons.password),
-                              ),
-                              suffixIcon: IconButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _hideText = !_hideText;
-                                  });
-                                },
-                                icon: _hideText
-                                    ? const Icon(Icons.visibility)
-                                    : const Icon(Icons.visibility_off),
-                              ),
-                            ),
-                            validator: viewModel.validarSenha,
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: Semantics(
-                            label: "Botão para entrar no sistema",
-                            button: true,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Color.fromARGB(
-                                  255,
-                                  242,
-                                  164,
-                                  164,
-                                ), // salmón
-                                foregroundColor: Colors.white,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                              ),
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  bool loginValido = await viewModel.loginAPI(
-                                    _controllerEmail.text,
-                                    _controllerSenha.text,
-                                  );
-
-                                  if (loginValido) {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            const TelaInicial(),
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "Email ou senha incorretos",
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                }
-                              },
-
-                              child: const Text("Enviar"),
-                            ),
-                          ),
-                        ),
-                      ],
+                    child: Image.asset(
+                      "assets/logo_e-festa.png",
+                      fit: BoxFit.contain,
+                      alignment: const Alignment(0, -2),
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 10),
+
+                Container(
+                  padding: const EdgeInsets.all(15),
+
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        blurRadius: 10,
+                        offset: Offset(0, 5),
+                      ),
+                    ],
+                  ),
+
+                  child: Column(
+                    children: [
+
+                      TextFormField(
+                        controller: _controllerEmail,
+                        keyboardType: TextInputType.emailAddress,
+
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+
+                          labelText: "Email",
+                          hintText: "Digite seu email",
+
+                          prefixIcon: const Icon(Icons.email),
+                        ),
+
+                        validator: viewModel.validarEmail,
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      TextFormField(
+                        controller: _controllerSenha,
+                        obscureText: _hideText,
+
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+
+                          labelText: "Senha",
+                          hintText: "Digite sua senha",
+
+                          prefixIcon: const Icon(Icons.password),
+
+                          suffixIcon: IconButton(
+                            onPressed: () {
+                              setState(() {
+                                _hideText = !_hideText;
+                              });
+                            },
+
+                            icon: _hideText
+                                ? const Icon(Icons.visibility)
+                                : const Icon(Icons.visibility_off),
+                          ),
+                        ),
+
+                        validator: viewModel.validarSenha,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      SizedBox(
+                        width: double.infinity,
+                        height: 50,
+
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              242,
+                              164,
+                              164,
+                            ),
+
+                            foregroundColor: Colors.white,
+
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+
+                          onPressed: () async {
+
+                            if (_formKey.currentState!.validate()) {
+
+                              final result = await viewModel.loginAPI(
+                                _controllerEmail.text,
+                                _controllerSenha.text,
+                              );
+
+                              if (result != null) {
+
+                                if (result["perfil"] == "admin") {
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const AdminPage(),
+                                    ),
+                                  );
+
+                                } else {
+
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => const ClientePage(),
+                                    ),
+                                  );
+                                }
+
+                              } else {
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Email ou senha incorretos",
+                                    ),
+                                  ),
+                                );
+                              }
+                            }
+                          },
+
+                          child: const Text("Enviar"),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
           ),
         ),

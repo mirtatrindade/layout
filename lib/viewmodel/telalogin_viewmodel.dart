@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import '../config/api_config.dart';
 
 class TelaloginViewModel {
   String? validarEmail(String? value) {
@@ -22,20 +24,31 @@ class TelaloginViewModel {
     return null;
   }
 
-  Future<bool> loginAPI(String email, String senha) async {
-    final url = Uri.parse("http://localhost/efesta/login.php");
 
-    final response = await http.post(
-      url,
-      body: {"email": email, "senha": senha},
-    );
 
-    final data = jsonDecode(response.body);
+ Future<Map<String, dynamic>?> loginAPI(
+  String email,
+  String senha,
+) async {
 
-    if (data["status"] == "sucesso") {
-      return true;
-    } else {
-      return false;
-    }
+  final url = Uri.parse(
+    "${ApiConfig.baseUrl}/login.php",
+  );
+
+  final response = await http.post(
+    url,
+    body: {
+      "email": email,
+      "senha": senha,
+    },
+  );
+
+  final data = jsonDecode(response.body);
+
+  if (data["status"] == "sucesso") {
+    return data;
+  } else {
+    return null;
   }
+}
 }
