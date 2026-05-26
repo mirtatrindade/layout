@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'dart:io';
 import '../config/api_config.dart';
 
 class TelaloginViewModel {
@@ -24,30 +23,39 @@ class TelaloginViewModel {
     return null;
   }
 
-
-
- Future<Map<String, dynamic>?> loginAPI(
+Future<Map<String, dynamic>?> loginAPI(
   String email,
   String senha,
 ) async {
 
-  final url = Uri.parse(
-    "${ApiConfig.baseUrl}/login.php",
-  );
+  try {
 
-  final response = await http.post(
-    url,
-    body: {
-      "email": email,
-      "senha": senha,
-    },
-  );
+    final url = Uri.parse(
+      "${ApiConfig.baseUrl}/login.php",
+    );
 
-  final data = jsonDecode(response.body);
+    final response = await http.post(
+      url,
+      body: {
+        "email": email,
+        "senha": senha,
+      },
+    );
 
-  if (data["status"] == "sucesso") {
-    return data;
-  } else {
+    if (response.statusCode == 200) {
+
+      final data = jsonDecode(response.body);
+
+      if (data["status"] == "sucesso") {
+        return data;
+      }
+    }
+
+    return null;
+
+  } catch (e) {
+
+    print("Erro login API: $e");
     return null;
   }
 }

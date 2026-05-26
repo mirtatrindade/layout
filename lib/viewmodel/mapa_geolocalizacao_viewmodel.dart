@@ -41,8 +41,7 @@ class MapaGeolocalizacaoViewModel extends ChangeNotifier {
     //    e guardar em _posicaoAtual.
     // 5. Em caso de erro (catch), guardar a mensagem em _mensagemErro.
     // 6. Ao final, _loading = false e notifyListeners().
-    
-    
+
     try {
       bool serviceEnabled;
       LocationPermission permission;
@@ -97,7 +96,10 @@ class MapaGeolocalizacaoViewModel extends ChangeNotifier {
       final List coordinates = data['routes'][0]['geometry']['coordinates'];
       _pontosRota = coordinates.map<LatLng>((coord) {
         // GeoJSON usa [longitude, latitude]
-        return LatLng(coord[1] as double, coord[0] as double);
+        return LatLng(
+          (coord[1] as num).toDouble(),
+          (coord[0] as num).toDouble(),
+        );
       }).toList();
     } catch (e) {
       _rotaErro = 'Erro ao processar rota: $e';

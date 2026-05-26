@@ -14,7 +14,10 @@ class ListarEventosPage extends StatefulWidget {
 class _ListarEventosPageState extends State<ListarEventosPage> {
 
   List eventos = [];
+
   bool loading = true;
+
+  String filtro = "todos";
 
   @override
   void initState() {
@@ -25,7 +28,7 @@ class _ListarEventosPageState extends State<ListarEventosPage> {
   Future<void> carregarEventos() async {
 
     final url = Uri.parse(
-      "${ApiConfig.baseUrl}/listar_eventos.php",
+      "${ApiConfig.baseUrl}/listar_evento.php",
     );
 
     final response = await http.get(url);
@@ -41,13 +44,35 @@ class _ListarEventosPageState extends State<ListarEventosPage> {
   @override
   Widget build(BuildContext context) {
 
+    List eventosFiltrados = eventos;
+
+    if (filtro == "pendente") {
+
+      eventosFiltrados = eventos
+          .where((e) => e["estado"] == "pendente")
+          .toList();
+    }
+
+    if (filtro == "confirmado") {
+
+      eventosFiltrados = eventos
+          .where((e) => e["estado"] == "confirmado")
+          .toList();
+    }
+
     return Scaffold(
+
       appBar: AppBar(
         title: const Text("Eventos"),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        foregroundColor: const Color.fromARGB(255, 242, 164, 164),
+        foregroundColor: const Color.fromARGB(
+          255,
+          242,
+          164,
+          164,
+        ),
       ),
 
       body: Container(
@@ -65,83 +90,151 @@ class _ListarEventosPageState extends State<ListarEventosPage> {
           ),
         ),
 
-        child: loading
-            ? const Center(
-                child: CircularProgressIndicator(),
-              )
+        child: Column(
+          children: [
 
-            : eventos.isEmpty
-                ? const Center(
-                    child: Text(
-                      "Nenhum evento encontrado",
-                    ),
-                  )
+            Padding(
+              padding: const EdgeInsets.all(16),
 
-                : ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: eventos.length,
+              child: DropdownButtonFormField(
+                value: filtro,
 
-                    itemBuilder: (context, index) {
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
 
-                      final evento = eventos[index];
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
 
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 16),
+                  labelText: "Filtrar eventos",
+                ),
 
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
-                        ),
+                items: const [
 
-                        child: Padding(
+                  DropdownMenuItem(
+                    value: "todos",
+                    child: Text("Todos"),
+                  ),
+
+                  DropdownMenuItem(
+                    value: "pendente",
+                    child: Text("Pendentes"),
+                  ),
+
+                  DropdownMenuItem(
+                    value: "confirmado",
+                    child: Text("Confirmados"),
+                  ),
+                ],
+
+                onChanged: (value) {
+
+                  setState(() {
+                    filtro = value!;
+                  });
+                },
+              ),
+            ),
+
+            Expanded(
+
+              child: loading
+
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+
+                  : eventosFiltrados.isEmpty
+
+                      ? const Center(
+                          child: Text(
+                            "Nenhum evento encontrado",
+                            style: TextStyle(
+                              fontSize: 18,
+                            ),
+                          ),
+                        )
+
+                      : ListView.builder(
                           padding: const EdgeInsets.all(16),
 
-                          child: Column(
-                            crossAxisAlignment:
-                                CrossAxisAlignment.start,
+                          itemCount: eventosFiltrados.length,
 
-                            children: [
+                          itemBuilder: (context, index) {
 
-                              Text(
-                                evento["nome"],
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromARGB(
-                                    255,
-                                    242,
-                                    164,
-                                    164,
-                                  ),
+                            final evento =
+                                eventosFiltrados[index];
+
+                            return Card(
+                              margin: const EdgeInsets.only(
+                                bottom: 16,
+                              ),
+
+                              shape: RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.circular(20),
+                              ),
+
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.all(16),
+
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+
+                                  children: [
+
+                                    Text(
+                                      evento["nombre"],
+
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight:
+                                            FontWeight.bold,
+
+                                        color: Color.fromARGB(
+                                          255,
+                                          242,
+                                          164,
+                                          164,
+                                        ),
+                                      ),
+                                    ),
+
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+
+                                    Text(
+                                      "Tipo: ${evento["tipo"]}",
+                                    ),
+
+                                    Text(
+                                      "Data: ${evento["fecha"]}",
+                                    ),
+
+                                    Text(
+                                      "Horas: ${evento["horas"]}",
+                                    ),
+
+                                    Text(
+                                      "Pessoas: ${evento["cantidad_personas"]}",
+                                    ),
+
+                                    Text(
+                                      "Estado: ${evento["estado"]}",
+                                    ),
+                                  ],
                                 ),
                               ),
-
-                              const SizedBox(height: 10),
-
-                              Text(
-                                "Tipo: ${evento["tipo"]}",
-                              ),
-
-                              Text(
-                                "Data: ${evento["data"]}",
-                              ),
-
-                              Text(
-                                "Horas: ${evento["horas"]}",
-                              ),
-
-                              Text(
-                                "Pessoas: ${evento["quantidade_pessoas"]}",
-                              ),
-
-                              Text(
-                                "Estado: ${evento["estado"]}",
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
-                      );
-                    },
-                  ),
+            ),
+          ],
+        ),
       ),
     );
   }
