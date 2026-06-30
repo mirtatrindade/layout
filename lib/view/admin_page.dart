@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'tela_login.dart';
 import 'listar_eventos_page.dart';
 import 'fotos_eventos_page.dart';
 
@@ -10,18 +10,39 @@ class AdminPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: const Text("Administrador"),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
+        foregroundColor: const Color.fromARGB(255, 214, 106, 106),
 
-        title: const Text(
-          "ADMINISTRADOR",
-          style: TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.w600,
-            color: Color.fromARGB(255, 214, 106, 106),
+        actions: [
+          TextButton.icon(
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const Telalogin(),
+                ),
+                (route) => false,
+              );
+            },
+
+            icon: const Icon(
+              Icons.logout,
+              color: Color.fromARGB(255, 214, 106, 106),
+            ),
+
+            label: const Text(
+              "Sair",
+              style: TextStyle(
+                color: Color.fromARGB(255, 214, 106, 106),
+                fontWeight: FontWeight.bold,
+              ),
+            ),
           ),
-        ),
+        ],
       ),
 
       body: Container(
@@ -39,141 +60,101 @@ class AdminPage extends StatelessWidget {
           ),
         ),
 
-        child: SafeArea(
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(30),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(25),
+            margin: const EdgeInsets.all(30),
 
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(25),
 
-                children: [
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 10,
+                  offset: Offset(0, 5),
+                ),
+              ],
+            ),
 
-                  ClipOval(
-                    child: Container(
-                      width: 200,
-                      height: 140,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
 
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                          color: Colors.white,
-                          width: 3,
-                        ),
+              children: [
+                const Text(
+                  "Painel Administrativo",
+                  textAlign: TextAlign.center,
+
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Color.fromARGB(255, 214, 106, 106),
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const ListarEventosPage(),
                       ),
+                    );
+                  },
 
-                      child: Image.asset(
-                        "assets/logo_e-festa.png",
-                        fit: BoxFit.contain,
-                        alignment: const Alignment(0, -2),
-                      ),
-                    ),
+                  icon: const Icon(Icons.list_alt),
+
+                  label: const Text(
+                    "Gerenciar eventos",
                   ),
 
-                  const SizedBox(height: 30),
-
-                  Container(
-                    padding: const EdgeInsets.all(25),
-
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-
-                      boxShadow: const [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 5),
-                        ),
-                      ],
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(
+                      255,
+                      242,
+                      164,
+                      164,
                     ),
 
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                183,
-                                217,
-                                243,
-                              ),
-
-                              foregroundColor: Colors.black87,
-
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const ListarEventosPage(),
-                                ),
-                              );
-                            },
-
-                            icon: const Icon(Icons.list_alt),
-
-                            label: const Text(
-                              "Todos os Eventos",
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        SizedBox(
-                          width: double.infinity,
-                          height: 55,
-
-                          child: ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                248,
-                                191,
-                                172,
-                              ),
-
-                              foregroundColor: Colors.white,
-
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      const FotosEventosPage(),
-                                ),
-                              );
-                            },
-
-                            icon: const Icon(Icons.photo_library),
-
-                            label: const Text(
-                              "Fotos do Salão",
-                              style: TextStyle(fontSize: 18),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    foregroundColor: Colors.white,
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 20),
+
+                ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            const FotosEventosPage(),
+                      ),
+                    );
+                  },
+
+                  icon: const Icon(Icons.photo_library),
+
+                  label: const Text(
+                    "Fotos do salão",
+                  ),
+
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(
+                      255,
+                      183,
+                      217,
+                      243,
+                    ),
+
+                    foregroundColor: Colors.black87,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

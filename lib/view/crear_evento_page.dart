@@ -16,8 +16,10 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
   final _nome = TextEditingController();
   final _tipo = TextEditingController();
   final _data = TextEditingController();
-  final _horas = TextEditingController();
-  final _quantidade = TextEditingController();
+  final _horaInicio = TextEditingController();
+  final _duracao = TextEditingController();
+  final _adultos = TextEditingController();
+  final _criancas = TextEditingController();
 
   bool loading = false;
 
@@ -29,6 +31,8 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
   double total = 0;
 
+  bool incluiComida = false;
+
   @override
   void initState() {
     super.initState();
@@ -37,8 +41,7 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
   }
 
   Future<void> carregarDatasOcupadas() async {
-    datasOcupadas =
-        await viewModel.buscarDatasOcupadas();
+    datasOcupadas = await viewModel.buscarDatasOcupadas();
 
     setState(() {});
   }
@@ -55,9 +58,7 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Crear Evento"),
-      ),
+      appBar: AppBar(title: const Text("Reserva de Evento")),
 
       body: SafeArea(
         child: SingleChildScrollView(
@@ -65,8 +66,6 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
           child: Column(
             children: [
-
-              /// NOME
               Semantics(
                 textField: true,
                 label: "Campo nome do evento",
@@ -75,7 +74,7 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
                   controller: _nome,
 
                   decoration: const InputDecoration(
-                    labelText: "Nome",
+                    labelText: "Nome do evento",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -83,16 +82,15 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
               const SizedBox(height: 15),
 
-              /// TIPO
               Semantics(
                 textField: true,
                 label: "Campo tipo do evento",
 
                 child: TextField(
                   controller: _tipo,
-
                   decoration: const InputDecoration(
-                    labelText: "Tipo",
+                    labelText: "Tipo do evento",
+                    hintText: "Ex: aniversário, formatura, chá de fraldas",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -100,17 +98,32 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
               const SizedBox(height: 15),
 
-              /// HORAS
+              Semantics(
+                textField: true,
+                label: "Campo hora de início",
+
+                child: TextField(
+                  controller: _horaInicio,
+                  decoration: const InputDecoration(
+                    labelText: "Hora de início",
+                    hintText: "Ex: 18:00",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
               Semantics(
                 textField: true,
                 label: "Campo horas do evento",
 
                 child: TextField(
-                  controller: _horas,
+                  controller: _duracao,
                   keyboardType: TextInputType.number,
 
                   decoration: const InputDecoration(
-                    labelText: "Horas",
+                    labelText: "Duração em horas",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -118,17 +131,31 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
               const SizedBox(height: 15),
 
-              /// PESSOAS
               Semantics(
                 textField: true,
-                label: "Campo quantidade de pessoas",
+                label: "Campo quantidade de adultos",
 
                 child: TextField(
-                  controller: _quantidade,
+                  controller: _adultos,
                   keyboardType: TextInputType.number,
-
                   decoration: const InputDecoration(
-                    labelText: "Pessoas",
+                    labelText: "Quantidade de adultos",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 15),
+
+              Semantics(
+                textField: true,
+                label: "Campo quantidade de crianças (2 a 12 anos)",
+
+                child: TextField(
+                  controller: _criancas,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(
+                    labelText: "Quantidade de crianças (2 a 12 anos)",
                     border: OutlineInputBorder(),
                   ),
                 ),
@@ -136,98 +163,120 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
               const SizedBox(height: 20),
 
-              /// CALENDÁRIO
+              const SizedBox(height: 15),
+
+              CheckboxListTile(
+                title: const Text("Contratar serviço de alimentação"),
+
+                value: incluiComida,
+
+                onChanged: (value) {
+                  setState(() {
+                    incluiComida = value ?? false;
+                  });
+                },
+              ),
+
               Semantics(
                 label: "Calendário de seleção de datas",
+                child: Center(
+                  child: SizedBox(
+                    width: 320,
 
-                child: TableCalendar(
-                  firstDay: DateTime.utc(2024, 1, 1),
-                  lastDay: DateTime.utc(2030, 12, 31),
-                  focusedDay: _focusedDay,
+                    child: TableCalendar(
+                      firstDay: DateTime.utc(2024, 1, 1),
+                      lastDay: DateTime.utc(2030, 12, 31),
+                      focusedDay: _focusedDay,
 
-                  selectedDayPredicate: (day) {
-                    return isSameDay(
-                      _selectedDay,
-                      day,
-                    );
-                  },
+                      enabledDayPredicate: (day) {
+                        final hoje = DateTime.now();
 
-                  onDaySelected: (
-                    selectedDay,
-                    focusedDay,
-                  ) {
+                        final dataMinima = DateTime(
+                          hoje.year,
+                          hoje.month,
+                          hoje.day,
+                        ).add(const Duration(days: 3));
 
-                    if (dataEstaOcupada(selectedDay)) {
+                        return !day.isBefore(dataMinima);
+                      },
 
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            "Esta data já está ocupada",
-                          ),
-                        ),
-                      );
+                      onDaySelected: (selectedDay, focusedDay) {
+                        final hoje = DateTime.now();
 
-                      return;
-                    }
+                        final dataMinima = DateTime(
+                          hoje.year,
+                          hoje.month,
+                          hoje.day,
+                        ).add(const Duration(days: 3));
 
-                    setState(() {
-                      _selectedDay = selectedDay;
+                        if (selectedDay.isBefore(dataMinima)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                "As reservas devem ser feitas com pelo menos 3 dias de antecedência",
+                              ),
+                            ),
+                          );
 
-                      _focusedDay = focusedDay;
+                          return;
+                        }
+                        if (dataEstaOcupada(selectedDay)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Esta data já está ocupada"),
+                            ),
+                          );
 
-                      _data.text =
-                          selectedDay
-                              .toString()
-                              .split(" ")[0];
-                    });
-                  },
+                          return;
+                        }
 
-                  calendarBuilders: CalendarBuilders(
+                        setState(() {
+                          _selectedDay = selectedDay;
 
-                    defaultBuilder: (
-                      context,
-                      day,
-                      focusedDay,
-                    ) {
+                          _focusedDay = focusedDay;
 
-                      final ocupada =
-                          dataEstaOcupada(day);
+                          _data.text = selectedDay.toString().split(" ")[0];
+                        });
+                      },
 
-                      return Container(
-                        margin: const EdgeInsets.all(6),
+                      calendarBuilders: CalendarBuilders(
+                        defaultBuilder: (context, day, focusedDay) {
+                          final ocupada = dataEstaOcupada(day);
 
-                        decoration: BoxDecoration(
-                          color: ocupada
-                              ? Colors.red
-                              : Colors.green,
+                          return Container(
+                            margin: const EdgeInsets.all(6),
 
+                            decoration: BoxDecoration(
+                              color: ocupada ? Colors.red : Colors.green,
+
+                              shape: BoxShape.circle,
+                            ),
+
+                            child: Center(
+                              child: Text(
+                                '${day.day}',
+
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+
+                      calendarStyle: const CalendarStyle(
+                        todayDecoration: BoxDecoration(
+                          color: Colors.pink,
                           shape: BoxShape.circle,
                         ),
 
-                        child: Center(
-                          child: Text(
-                            '${day.day}',
-
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                        selectedDecoration: BoxDecoration(
+                          color: Colors.blue,
+                          shape: BoxShape.circle,
                         ),
-                      );
-                    },
-                  ),
-
-                  calendarStyle: const CalendarStyle(
-
-                    todayDecoration: BoxDecoration(
-                      color: Colors.pink,
-                      shape: BoxShape.circle,
-                    ),
-
-                    selectedDecoration: BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
+                      ),
                     ),
                   ),
                 ),
@@ -235,7 +284,6 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
               const SizedBox(height: 20),
 
-              /// DATA ESCOLHIDA
               Semantics(
                 textField: true,
                 label: "Campo data do evento",
@@ -253,119 +301,188 @@ class _CrearEventoPageState extends State<CrearEventoPage> {
 
               const SizedBox(height: 20),
 
-              /// TOTAL
-              Text(
-                "Presupuesto estimado: \$ ${total.toStringAsFixed(2)}",
+              SizedBox(
+                width: double.infinity,
 
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.calculate),
+
+                  label: const Text("Calcular orçamento"),
+
+                  onPressed: () {
+                    if (_duracao.text.isEmpty) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Informe a duração do evento"),
+                        ),
+                      );
+
+                      return;
+                    }
+
+                    final duracao = int.tryParse(_duracao.text);
+
+                    final adultos = int.tryParse(_adultos.text) ?? 0;
+
+                    final criancas = int.tryParse(_criancas.text) ?? 0;
+
+                    if (duracao == null || duracao <= 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("A duração deve ser maior que zero"),
+                        ),
+                      );
+
+                      return;
+                    }
+
+                    double valor = duracao * 100;
+
+                    if (incluiComida) {
+                      valor += adultos * 50;
+
+                      valor += criancas * 25;
+                    }
+
+                    setState(() {
+                      total = valor;
+                    });
+                  },
                 ),
               ),
+
+              const SizedBox(height: 15),
+
+              if (total > 0)
+                Text(
+                  "Orçamento aproximado: R\$ ${total.toStringAsFixed(2)}",
+
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
 
               const SizedBox(height: 20),
 
               loading
                   ? const CircularProgressIndicator()
+                  : Column(
+                      children: [
+                        // BOTÓN RESERVAR
+                        SizedBox(
+                          width: double.infinity,
 
-                  : SizedBox(
-                      width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.event_available),
 
-                      child: Semantics(
-                        button: true,
-                        label: "Botão guardar evento",
+                            label: const Text("Reservar"),
 
-                        child: ElevatedButton(
-                          onPressed: () async {
+                            onPressed: () async {
+                              final duracao = int.tryParse(_duracao.text);
 
-                            final horas =
-                                int.tryParse(_horas.text);
+                              final adultos = int.tryParse(_adultos.text) ?? 0;
 
-                            final pessoas =
-                                int.tryParse(_quantidade.text);
-
-                            if (horas == null ||
-                                pessoas == null) {
-
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Digite números válidos",
+                              final criancas =
+                                  int.tryParse(_criancas.text) ?? 0;
+                              if (_nome.text.isEmpty ||
+                                  _tipo.text.isEmpty ||
+                                  _data.text.isEmpty ||
+                                  _horaInicio.text.isEmpty ||
+                                  duracao == null ||
+                                  duracao <= 0 ||
+                                  adultos <= 0) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Complete todos os campos corretamente",
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
 
-                              return;
-                            }
+                                return;
+                              }
 
-                            if (_data.text.isEmpty) {
+                              setState(() => loading = true);
 
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Selecione uma data",
+                              if (total <= 0) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Calcule o orçamento antes de reservar",
+                                    ),
                                   ),
-                                ),
+                                );
+
+                                return;
+                              }
+
+                              bool ok = await viewModel.crearEvento(
+                                1,
+                                _nome.text,
+                                _tipo.text,
+                                _data.text,
+                                _horaInicio.text,
+                                duracao,
+                                adultos,
+                                criancas,
+                                incluiComida,
+                                total,
                               );
 
-                              return;
-                            }
+                              setState(() => loading = false);
 
-                            setState(() {
+                              if (ok) {
+                                await carregarDatasOcupadas();
 
-                              total =
-                                  viewModel.calcularPresupuesto(
-                                horas,
-                                pessoas,
-                              );
-                            });
-
-                            setState(() => loading = true);
-
-                            bool ok =
-                                await viewModel.crearEvento(
-                              1,
-                              _nome.text,
-                              _tipo.text,
-                              _data.text,
-                              horas,
-                              pessoas,
-                            );
-
-                            setState(() => loading = false);
-
-                            if (ok) {
-
-                              await carregarDatasOcupadas();
-
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Evento creado",
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      "Evento reservado com sucesso",
+                                    ),
                                   ),
-                                ),
-                              );
+                                );
 
-                            } else {
-
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(
-                                const SnackBar(
-                                  content: Text(
-                                    "Error ao criar evento",
+                                Navigator.pop(context);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("Erro ao reservar evento"),
                                   ),
-                                ),
-                              );
-                            }
-                          },
+                                );
+                              }
+                            },
 
-                          child: const Text("Guardar"),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                242,
+                                164,
+                                164,
+                              ),
+
+                              foregroundColor: Colors.white,
+                            ),
+                          ),
                         ),
-                      ),
+
+                        const SizedBox(height: 10),
+
+                        SizedBox(
+                          width: double.infinity,
+
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.close),
+
+                            label: const Text("Cancelar"),
+
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
             ],
           ),

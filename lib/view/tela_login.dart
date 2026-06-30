@@ -224,18 +224,22 @@ class _TelaloginState extends State<Telalogin> {
 
                                     if (result != null) {
                                       if (result["perfil"] == "admin") {
-                                        Navigator.push(
+                                        Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
                                             builder: (_) => const AdminPage(),
                                           ),
+                                          (route) => false,
                                         );
                                       } else {
-                                        Navigator.push(
+                                        Navigator.pushAndRemoveUntil(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (_) => const ClientePage(),
+                                            builder: (_) => ClientePage(
+                                              usuarioId: result["id"],
+                                            ),
                                           ),
+                                          (route) => false,
                                         );
                                       }
                                     } else {
@@ -254,10 +258,10 @@ class _TelaloginState extends State<Telalogin> {
 
                                 child: const Text(
                                   "Entrar",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),

@@ -6,6 +6,24 @@ import '../config/api_config.dart';
 
 class RegistroViewModel {
 
+  String? validarNome(String? value) {
+
+    if (value == null || value.trim().isEmpty) {
+      return "Digite seu nome completo";
+    }
+
+    return null;
+  }
+
+  String? validarCelular(String? value) {
+
+    if (value == null || value.trim().isEmpty) {
+      return "Digite seu celular";
+    }
+
+    return null;
+  }
+
   String? validarEmail(String? value) {
 
     if (value == null || value.isEmpty) {
@@ -33,6 +51,8 @@ class RegistroViewModel {
   }
 
   Future<bool> registrarUsuario(
+    String nome,
+    String celular,
     String email,
     String senha,
   ) async {
@@ -47,6 +67,8 @@ class RegistroViewModel {
         url,
 
         body: {
+          "nome": nome,
+          "celular": celular,
           "email": email,
           "senha": senha,
         },

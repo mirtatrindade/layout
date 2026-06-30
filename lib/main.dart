@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'view/tela_login.dart';
+import 'view/splash_page.dart';
 
 void main() {
   runApp(const MainApp());
@@ -12,7 +13,7 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Telalogin()
+      home: SplashPage(),
     );
   }
 }
